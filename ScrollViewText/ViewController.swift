@@ -10,15 +10,14 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    typealias LabelView = UILabel
+
     let scrollView = UIScrollView()
     let contentView = UIView()
 
-    let uiLabel = UILabel()
-    let uiLabelWithContentScaleAdjust = UILabel()
-    let uiLabelWithDoubleContentScaleAdjust = UILabel()
-    let drawingView = TextDrawingView()
-    let drawingViewWithContentScaleAdjust = TextDrawingView()
-    let drawingViewWithDoubleContentScaleAdjust = TextDrawingView()
+    let label = LabelView()
+    let labelWithContentScaleAdjust = LabelView()
+    let labelWithDoubleContentScaleAdjust = LabelView()
 
     let zoomLevelLabel = UILabel()
     let centerButton = UIButton(type: UIButton.ButtonType.custom)
@@ -46,33 +45,23 @@ class ViewController: UIViewController {
         let loremIpsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam"
 
         // looks blurry when zoomed in, and pixely when zoomed out. Zoom around betweeen 5% and 10%, it "glitters"
-        configureLabel(self.uiLabel, text: "Label 1 UILabel\n\(loremIpsum)")
+        configureLabel(self.label, text: "Label 1\n\(loremIpsum)")
         // blurry when zoomed out at 20%
-        configureLabel(self.uiLabelWithContentScaleAdjust, text: "Label 2 UILabel (adjusted)\n\(loremIpsum)")
+        configureLabel(self.labelWithContentScaleAdjust, text: "Label 2 (adjusted)\n\(loremIpsum)")
         // still readable ad 20%, but 4x memory consumption?
-        configureLabel(self.uiLabelWithDoubleContentScaleAdjust, text: "Label 3 UILabel (2xadjusted)\n\(loremIpsum)")
-
-        // these look the same, enough to consider UILabel
-//        // looks blurry when zoomed in, and pixely when zoomed out
-//        configureLabel(self.drawingView, text: "Hello You - DrawingView")
-//        // looks good when zoomed in, and pixely when zoomed out
-//        configureLabel(self.drawingViewWithContentScaleAdjust, text: "Hello You - DrawingView (adjusted)")
-//        configureLabel(self.drawingViewWithDoubleContentScaleAdjust, text: "Hello You - DrawingView (2xadjusted)")
+        configureLabel(self.labelWithDoubleContentScaleAdjust, text: "Label 3 (2xadjusted)\n\(loremIpsum)")
 
         let baseRect = CGRect(origin: mid, size: CGSize(width: 200, height: 100))
-        self.uiLabel.frame = baseRect
+        self.label.frame = baseRect
         func layoutLabels(_ labels: [Label]) {
             zip(labels.dropLast(), labels.dropFirst()).forEach { (label, label2) in
                 label2.frame = rect(below: label.frame)
             }
         }
         layoutLabels([
-            self.uiLabel,
-            self.uiLabelWithContentScaleAdjust,
-            self.uiLabelWithDoubleContentScaleAdjust,
-//            self.drawingView,
-//            self.drawingViewWithContentScaleAdjust,
-//            self.drawingViewWithDoubleContentScaleAdjust
+            self.label,
+            self.labelWithContentScaleAdjust,
+            self.labelWithDoubleContentScaleAdjust,
         ])
     }
 
@@ -133,15 +122,12 @@ extension ViewController: UIScrollViewDelegate {
         let displayScale = self.view.window!.screen.scale
 
         let calculatedContentScale = scrollView.zoomScale * displayScale
-        self.uiLabelWithContentScaleAdjust.contentScaleFactor = calculatedContentScale
-        self.drawingViewWithContentScaleAdjust.contentScaleFactor = calculatedContentScale
-
-        self.uiLabelWithDoubleContentScaleAdjust.contentScaleFactor = calculatedContentScale * 2.0
-        self.drawingViewWithDoubleContentScaleAdjust.contentScaleFactor = calculatedContentScale * 2.0
+        self.labelWithContentScaleAdjust.contentScaleFactor = calculatedContentScale
+        self.labelWithDoubleContentScaleAdjust.contentScaleFactor = calculatedContentScale * 2.0
     }
 
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        print(self.uiLabel.contentScaleFactor)
+        print(self.label.contentScaleFactor)
     }
 
     private static let levelFormatter: NumberFormatter = {
