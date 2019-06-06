@@ -22,6 +22,7 @@
 		D1D6C24522A91AC70088005C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D1D6C24822A91AC70088005C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D1D6C24A22A91AC70088005C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D1D6C25022A93FC80088005C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +57,7 @@
 			children = (
 				D1D6C23E22A91AC70088005C /* AppDelegate.swift */,
 				D1D6C24022A91AC70088005C /* ViewController.swift */,
+				D1D6C25022A93FC80088005C /* README.md */,
 				D1D6C24222A91AC70088005C /* Main.storyboard */,
 				D1D6C24522A91AC70088005C /* Assets.xcassets */,
 				D1D6C24722A91AC70088005C /* LaunchScreen.storyboard */,

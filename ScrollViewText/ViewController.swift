@@ -29,40 +29,53 @@ class ViewController: UIViewController {
         self.addButtonsAndZoomLevelIndicator()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        self.center()
+    }
+
     func configureLabels() {
-        func rect(below rect: CGRect) -> CGRect {
-            return rect.offsetBy(dx: 0.0, dy: rect.height + 10)
-        }
+
         func configureLabel(_ label: Label, text: String) {
             label.attributedText = NSAttributedString(string: text, attributes: [.font: UIFont.systemFont(ofSize: 16)])
             contentView.addSubview(label)
             label.backgroundColor = UIColor.white
             (label as? UILabel)?.numberOfLines = 0
         }
-        let contentRect = self.contentView.bounds
-        let mid = CGPoint(x: contentRect.midX, y: contentRect.midY)
-
-        let loremIpsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam"
-
-        // looks blurry when zoomed in, and pixely when zoomed out. Zoom around betweeen 5% and 10%, it "glitters"
-        configureLabel(self.label, text: "Label 1\n\(loremIpsum)")
-        // blurry when zoomed out at 20%
-        configureLabel(self.labelWithContentScaleAdjust, text: "Label 2 (adjusted)\n\(loremIpsum)")
-        // still readable ad 20%, but 4x memory consumption?
-        configureLabel(self.labelWithDoubleContentScaleAdjust, text: "Label 3 (2xadjusted)\n\(loremIpsum)")
-
-        let baseRect = CGRect(origin: mid, size: CGSize(width: 200, height: 100))
-        self.label.frame = baseRect
-        func layoutLabels(_ labels: [Label]) {
+        func layoutLabelAsVerticalStack(_ labels: [Label]) {
+            func rect(below rect: CGRect) -> CGRect {
+                return rect.offsetBy(dx: 0.0, dy: rect.height + 10)
+            }
             zip(labels.dropLast(), labels.dropFirst()).forEach { (label, label2) in
                 label2.frame = rect(below: label.frame)
             }
         }
-        layoutLabels([
+        let contentRect = self.contentView.bounds
+        let mid = CGPoint(x: contentRect.midX, y: contentRect.midY)
+
+        let loremIpsum = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam"
+
+        // Label 1: Looks blurry when zoomed in, and pixely when zoomed out. Zoom around betweeen 5% and 10%, it "glitters"
+        configureLabel(self.label, text: "Label 1\n\(loremIpsum)")
+        // Label 2: May be blurry when zoomed out <= 20%
+        configureLabel(self.labelWithContentScaleAdjust, text: "Label 2 (adjusted)\n\(loremIpsum)")
+        // Label 3: Still readable at <= 20, but 4x memory consumption? and starts glittering < 8%
+        configureLabel(self.labelWithDoubleContentScaleAdjust, text: "Label 3 (2xadjusted)\n\(loremIpsum)")
+
+        self.label.frame = CGRect(origin: mid, size: CGSize(width: 500, height: 200))
+        layoutLabelAsVerticalStack([
             self.label,
             self.labelWithContentScaleAdjust,
             self.labelWithDoubleContentScaleAdjust,
         ])
+    }
+
+    // MARK: Point of Interest:
+
+    func adjustLabelScalesToZoomLevel() {
+        let displayScale = self.view.window!.screen.scale
+        let calculatedContentScale = scrollView.zoomScale * displayScale
+        self.labelWithContentScaleAdjust.contentScaleFactor = calculatedContentScale
+        self.labelWithDoubleContentScaleAdjust.contentScaleFactor = calculatedContentScale * 2.0
     }
 
     func configureScrollViewAndContentView() {
@@ -105,8 +118,7 @@ class ViewController: UIViewController {
     }
 
     var centerRect: CGRect {
-        let size = CGSize(width: 300, height: 300)
-        return CGRect(x: self.contentView.bounds.midX, y: self.contentView.bounds.midY, width: size.width, height: size.height).offsetBy(dx: size.width * -0.5, dy: size.height * -0.5)
+        return self.labelWithContentScaleAdjust.frame
     }
 }
 
@@ -119,11 +131,7 @@ extension ViewController: UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         let scale = NSNumber(value: Double(scrollView.zoomScale))
         self.zoomLevelLabel.text = ViewController.levelFormatter.string(from: scale)
-        let displayScale = self.view.window!.screen.scale
-
-        let calculatedContentScale = scrollView.zoomScale * displayScale
-        self.labelWithContentScaleAdjust.contentScaleFactor = calculatedContentScale
-        self.labelWithDoubleContentScaleAdjust.contentScaleFactor = calculatedContentScale * 2.0
+        self.adjustLabelScalesToZoomLevel()
     }
 
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
